@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Cmov_finance/Cmov_finance.iml" filepath="$PROJECT_DIR$/Cmov_finance/Cmov_finance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Cmov_financeProject.iml" filepath="$PROJECT_DIR$/Cmov_financeProject.iml" />
+    </modules>
+  </component>
+</project>
+
