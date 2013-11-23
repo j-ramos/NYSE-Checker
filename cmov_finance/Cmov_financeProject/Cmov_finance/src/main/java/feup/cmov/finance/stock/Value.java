@@ -8,17 +8,17 @@ import java.util.Date;
  */
 public class Value implements Serializable {
 
-    private Integer value;
+    private Float value;
     private Date date;
 
 
-    public void Value(Integer  value, Date date)
+    public Value(Float  value, Date date)
     {
         this.value=value;
         this.date=date;
     }
 
-    public Integer getValue() {
+    public Float getValue() {
         return value;
     }
 
@@ -26,7 +26,7 @@ public class Value implements Serializable {
         this.date = date;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(Float value) {
         this.value = value;
     }
 
