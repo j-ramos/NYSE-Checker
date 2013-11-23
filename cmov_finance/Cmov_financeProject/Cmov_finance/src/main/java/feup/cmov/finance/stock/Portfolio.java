@@ -15,13 +15,12 @@ import java.util.HashMap;
 /**
  * Created by Tiago on 19-11-2013.
  */
-public class Portefolio extends Application{
+public class Portfolio extends Application{
 
     private HashMap<String, Stock> stocks;
     private String filename;
-    public Portefolio()
+    public Portfolio()
     {
-
 
     }
 
@@ -29,11 +28,12 @@ public class Portefolio extends Application{
     public void onCreate() {
         Log.d("teste", "asd");
         super.onCreate();
+        stocks = new HashMap<String, Stock>();
 
         FileInputStream inputStream;
         filename = "dataPortefolio";
         try {
-            inputStream = FileInputStream(filename);
+            inputStream = new FileInputStream(filename);
             ObjectInputStream s = new ObjectInputStream(inputStream);
             stocks = (HashMap<String,Stock>)s.readObject();
             inputStream.close();
@@ -59,29 +59,35 @@ public class Portefolio extends Application{
             e.printStackTrace();
         }
     }
-    public HashMap<String, Stock> getStock()
+    public HashMap<String, Stock> getStocksHashMap()
     {
         return stocks;
     }
-    public void addStock(Stock s)
-    {
-        stocks.put(s.acronym, s);
-    }
+
     public ArrayList<Stock> getStocks(){
         return new ArrayList<Stock>(stocks.values());
     }
 
-    public void subtractShared(String name, int ammount)
+    public int getWalletSize() {
+        return stocks.size();
+    }
+
+    public void decreaseStockAmmount(String name, int ammount)
     {
         Stock s = stocks.get(name);
         s.subAmmount(ammount);
         stocks.put(name, s);
     }
 
-    public void addShared(String name, int ammount)
+    public void increaseStockAmmount(String name, int ammount)
     {
         Stock s = stocks.get(name);
         s.addAmmount(ammount);
+        stocks.put(name, s);
+    }
+
+    public void createStock(String name, int ammount) {
+        Stock s = new Stock(name,ammount);
         stocks.put(name, s);
     }
 }

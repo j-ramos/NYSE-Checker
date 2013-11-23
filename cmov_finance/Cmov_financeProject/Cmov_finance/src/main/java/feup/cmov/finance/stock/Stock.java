@@ -8,31 +8,35 @@ import java.util.ArrayList;
  */
 public class Stock implements Serializable {
     public String acronym;
-    public Integer amount;
+    public Integer ammount;
     private ArrayList<Value> history;
     public Float value;
     public Stock(String acronym, Integer amount)
     {
         this.acronym=acronym;
-        this.amount = amount;
+        this.ammount = amount;
         history=new ArrayList<Value>();
     }
 
 
 
     public void addAmmount(Integer ammount) {
-        this.amount += ammount;
+        this.ammount += ammount;
     }
 
     public void subAmmount(Integer ammount) {
-        this.amount -= ammount;
+        this.ammount -= ammount;
     }
 
     public ArrayList<Value> getHistory() {
         return history;
     }
-
+    public String getAcronym() { return acronym; }
     public void setHistory(ArrayList<Value> history) {
         this.history = history;
+    }
+
+    public Float getTotalValue() {
+        return ammount*value;
     }
 }

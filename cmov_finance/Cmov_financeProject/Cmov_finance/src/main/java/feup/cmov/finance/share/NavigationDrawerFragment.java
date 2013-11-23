@@ -1,19 +1,18 @@
 package feup.cmov.finance.share;
 
-;
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Color;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.TypedValue;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import feup.cmov.cmov_finance.R;
+import feup.cmov.finance.chart.PortfolioChartStatisticsActivity;
+
+;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -82,9 +84,6 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
 
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
-
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
     }
@@ -102,8 +101,8 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
         mDrawerListView.setAdapter(new DrawerAdapter( getActivity(), R.layout.drawer_layout_item, new String[]{
-                getString(R.string.title_section1),
-                getString(R.string.title_section2),
+                getString(R.string.current_portfolio),
+                getString(R.string.portfolio_30_day),
         }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -136,11 +135,11 @@ public class NavigationDrawerFragment extends Fragment {
             switch (pos)
             {
                 case 0:
-                    text.setText(R.string.title_section1);
+                    text.setText(R.string.current_portfolio);
                     image.setImageResource(R.drawable.circular);
                     break;
                 case 1:
-                    text.setText(R.string.title_section2);
+                    text.setText(R.string.portfolio_30_day);
                     image.setImageResource(R.drawable.barras);
                     break;
             }
@@ -234,9 +233,28 @@ public class NavigationDrawerFragment extends Fragment {
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
+            Log.d("SELECT ITEM:", ((Integer)position).toString());
         }
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
+        }
+        /*
+        0 -> 30 dias (circular)
+        1 -> 30 dias (barras)
+         */
+        switch(mCurrentSelectedPosition) {
+            case 0:
+                Intent myIntent = new Intent(getActivity().getApplicationContext(), PortfolioChartStatisticsActivity.class);
+                myIntent.putExtra("type", "Circular"); //Optional parameters
+                startActivity(myIntent);
+
+                break;
+            case 1:
+                Toast s = Toast.makeText(getActivity().getApplicationContext(), "30 Dias (Barras)", Toast.LENGTH_LONG);
+                s.show();
+                break;
+            default:
+                return;
         }
     }
 

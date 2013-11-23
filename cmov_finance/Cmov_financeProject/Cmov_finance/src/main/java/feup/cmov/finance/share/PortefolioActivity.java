@@ -1,7 +1,7 @@
 package feup.cmov.finance.share;
 
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -12,13 +12,13 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.BaseColumns;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
@@ -35,7 +35,7 @@ import feup.cmov.cmov_finance.R;
 import feup.cmov.finance.chart.ChartStockActivity;
 import feup.cmov.finance.connection.Network;
 import feup.cmov.finance.connection.WebServiceCallRunnable;
-import feup.cmov.finance.stock.Portefolio;
+import feup.cmov.finance.stock.Portfolio;
 import feup.cmov.finance.stock.Stock;
 
 public class PortefolioActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
@@ -43,9 +43,11 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
     private CharSequence mTitle;
     private HashMap<String, Stock> stocks;
     private ListView listView;
-    private PortefolioAdapter adapter;
+    private PortfolioAdapter adapter;
     private Dialog dialog;
     private ArrayList<Stock> stockArray;
+
+    protected Portfolio portfolio;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,18 +61,22 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-        stocks = new HashMap<String, Stock>();
-        stocks.put("AAPL", new Stock("AAPL", 150));
-        stocks.put("IBM", new Stock("IBM", 12));
-        stocks.put("DELL", new Stock("DELL", 15));
-        stocks.put("CSCO", new Stock("CSCO", 120));
-        stocks.put("AMZN", new Stock("AMZN", 20));
-        stocks.put("GOOG", new Stock("GOOG", 25));
+
+        portfolio = (Portfolio) getApplication();
+        portfolio.createStock("AAPL", 150);
+        portfolio.createStock("IBM", 12);
+        portfolio.createStock("DELL", 15);
+        portfolio.createStock("CSCO", 120);
+        portfolio.createStock("AMZN", 20);
+        portfolio.createStock("GOOG", 25);
+
+        stocks = portfolio.getStocksHashMap();
+
+
         listView = (ListView) findViewById(R.id.list);
-        Portefolio portefolio = (Portefolio)getApplication();
-        HashMap<String, Stock> asd = portefolio.getStock();
+
         stockArray = new ArrayList<Stock>(stocks.values());
-        adapter = new PortefolioAdapter(this , R.layout.list_item, stockArray);
+        adapter = new PortfolioAdapter(this , R.layout.list_item, stockArray);
         listView.setAdapter(adapter);
         final Context context = this;
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -100,10 +106,10 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.current_portfolio);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.portfolio_30_day);
                 break;
         }
     }
@@ -168,13 +174,13 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
     }
 
 
-    public class PortefolioAdapter extends ArrayAdapter<Stock> {
+    public class PortfolioAdapter extends ArrayAdapter<Stock> {
 
         private int layoutResourceId;
         private ArrayList<Stock> data;
         private Context context;
 
-        public PortefolioAdapter(Context context, int layoutResourceId, ArrayList<Stock> data) {
+        public PortfolioAdapter(Context context, int layoutResourceId, ArrayList<Stock> data) {
             super(context, layoutResourceId, data);
             this.layoutResourceId = layoutResourceId;
             this.context = context;
@@ -195,7 +201,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
 
             ((TextView) row.findViewById(R.id.acronym)).setText(s.acronym);
             ((TextView) row.findViewById(R.id.value)).setText(String.valueOf(s.value));
-            ((TextView) row.findViewById(R.id.amount)).setText(String.valueOf(s.amount));
+            ((TextView) row.findViewById(R.id.amount)).setText(String.valueOf(s.ammount));
             row.findViewById(R.id.action).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -254,7 +260,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                         TextView title = (TextView)view.findViewById(R.id.title);
                         title.setText("Venda");
                         numberPicker.setMinValue(0);
-                        numberPicker.setMaxValue(s.amount);
+                        numberPicker.setMaxValue(s.ammount);
                         dialog =  builder.create();
                         dialog.show();
                         return true;
