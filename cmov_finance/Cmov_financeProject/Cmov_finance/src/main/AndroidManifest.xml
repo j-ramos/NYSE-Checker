@@ -36,6 +36,7 @@
                 android:value="feup.cmov.finance.share.SearchActivity"/>
 
         </activity>
+        <activity android:name="feup.cmov.finance.share.ChartActivity" />
     </application>
 
 </manifest>
