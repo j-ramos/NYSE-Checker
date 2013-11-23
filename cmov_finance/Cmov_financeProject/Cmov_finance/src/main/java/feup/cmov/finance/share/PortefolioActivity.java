@@ -35,6 +35,7 @@ import feup.cmov.cmov_finance.R;
 import feup.cmov.finance.chart.ChartStockActivity;
 import feup.cmov.finance.connection.Network;
 import feup.cmov.finance.connection.WebServiceCallRunnable;
+import feup.cmov.finance.stock.Portefolio;
 import feup.cmov.finance.stock.Stock;
 
 public class PortefolioActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
@@ -66,7 +67,8 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         stocks.put("AMZN", new Stock("AMZN", 20));
         stocks.put("GOOG", new Stock("GOOG", 25));
         listView = (ListView) findViewById(R.id.list);
-
+        Portefolio portefolio = (Portefolio)getApplication();
+        HashMap<String, Stock> asd = portefolio.getStock();
         stockArray = new ArrayList<Stock>(stocks.values());
         adapter = new PortefolioAdapter(this , R.layout.list_item, stockArray);
         listView.setAdapter(adapter);

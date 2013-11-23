@@ -77,17 +77,18 @@ public class ChartStockActivity extends Activity {
         public void run() {
             Calendar now = GregorianCalendar.getInstance();
             Calendar month  = GregorianCalendar.getInstance();
-            month.add(1, Calendar.MONTH);
+            now.add(Calendar.MONTH, -1);
             Network network = new Network();
-            String query = "http://ichart.finance.yahoo.com/table.txt?g=d";
+            String query = "http://ichart.finance.yahoo.com/table.txt?";
             String initialyear = "&c=" + now.get(Calendar.YEAR);
-            String initialmonth = "&a=" + now.get(Calendar.MONTH);
+            String initialmonth = "a=" + now.get(Calendar.MONTH);
             String initialday = "&b=" + now.get(Calendar.DAY_OF_MONTH);
             String finalyear = "&f=" + month.get(Calendar.YEAR);
             String finalmonth = "&d=" + month.get(Calendar.MONTH);
             String finalday = "&e=" + month.get(Calendar.DAY_OF_MONTH);
             String name = "&s=" + stock.acronym;
-            final String res = network.get(query + initialday + initialmonth + initialyear+ finalday + finalmonth + finalyear+name);
+            query = query  + initialmonth + initialday + initialyear + finalmonth + finalday + finalyear + name + "&g=d";
+            final String res = network.get(query);
             String[] sStocks = res.split("\\r?\\n");
             ArrayList<Value> history= new ArrayList<Value>();
             for(int i=0; i < sStocks.length; i++)
