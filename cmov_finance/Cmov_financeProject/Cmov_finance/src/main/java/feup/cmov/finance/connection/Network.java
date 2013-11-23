@@ -23,11 +23,9 @@ import java.util.ArrayList;
 
 
 public class Network {
-    private String host;
     private DefaultHttpClient httpClient;
 
     public Network() {
-        this.host = "http://192.168.1.67";
         HttpParams httpParameters = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParameters, 30000);
         HttpConnectionParams.setSoTimeout(httpParameters, 30000);
@@ -35,11 +33,10 @@ public class Network {
     }
 
 
-    public String get(String path, ArrayList<NameValuePair> params)
+    public String get(String path)
     {
         String res = new String();
-        String paramString = URLEncodedUtils.format(params, "utf-8");
-        HttpGet httpGet = new HttpGet(host+path+"?"+paramString);
+        HttpGet httpGet = new HttpGet(path);
         HttpResponse response;
         try {
             response = httpClient.execute(httpGet);

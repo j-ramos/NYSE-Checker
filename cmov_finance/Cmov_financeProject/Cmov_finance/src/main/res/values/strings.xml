@@ -20,5 +20,8 @@
     <string name="title_activity_search_results">Share</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_search">Search</string>
+    <string name="cancel">Cancelar</string>
+    <string name="signin">Adicionar</string>
+    <string name="title_activity_chart_stock">Chart</string>
 
 </resources>
