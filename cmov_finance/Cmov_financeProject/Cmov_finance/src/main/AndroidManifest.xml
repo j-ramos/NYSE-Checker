@@ -20,7 +20,8 @@
         android:name="feup.cmov.finance.stock.Portfolio">
         <activity
             android:name="feup.cmov.finance.share.SearchActivity"
-            android:label="@string/title_activity_search" >
+            android:label="@string/title_activity_search"
+            android:parentActivityName="feup.cmov.finance.share.PortefolioActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -32,32 +33,34 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="feup.cmov.finance.share.PortefolioActivity" />
         </activity>
-        <activity
-            android:name="feup.cmov.finance.share.PortefolioActivity"
-            android:label="@string/title_activity_portefolio" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value="feup.cmov.finance.share.SearchActivity" />
-        </activity>
         <activity
             android:name="feup.cmov.finance.chart.ChartStockActivity"
-            android:label="@string/title_activity_chart_stock" >
+            android:label="@string/title_activity_chart_stock"
+            android:parentActivityName="feup.cmov.finance.share.PortefolioActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="feup.cmov.finance.share.PortefolioActivity" />
         </activity>
         <activity
             android:name="feup.cmov.finance.chart.PortfolioChartStatisticsActivity"
-            android:label="@string/title_activity_chart_statistics_portfolio" >
+            android:label="@string/title_activity_chart_statistics_portfolio"
+            android:parentActivityName="feup.cmov.finance.share.PortefolioActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="feup.cmov.finance.share.PortefolioActivity" />
+        </activity>
+        <activity
+            android:name="feup.cmov.finance.share.PortefolioActivity"
+            android:label="@string/title_activity_portefolio" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="feup.cmov.finance.share.SearchActivity" />
         </activity>
         <activity android:name="org.achartengine.GraphicalActivity" />
         <activity android:name="feup.cmov.finance.chart.StockEvolutionActivity" />
