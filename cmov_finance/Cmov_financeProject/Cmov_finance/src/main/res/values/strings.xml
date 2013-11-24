@@ -3,8 +3,6 @@
 
     <string name="app_name">Finance</string>
     <string name="title_activity_portefolio">Portefolio</string>
-    <string name="title_section1">Barras (30 dias)</string>
-    <string name="title_section2">Circular (30 dias)</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
@@ -23,5 +21,8 @@
     <string name="cancel">Cancelar</string>
     <string name="signin">Adicionar</string>
     <string name="title_activity_chart_stock">Chart</string>
+    <string name="title_activity_chart_statistics_portfolio">Portfolio</string>
 
+    <string name="current_portfolio">Current Portfolio</string>
+    <string name="portfolio_30_day">30 day portfolio </string>
 </resources>
