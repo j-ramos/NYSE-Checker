@@ -364,7 +364,8 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                                     public void onClick(DialogInterface dialog, int id) {
                                         NumberPicker number = (NumberPicker)viewBuy.findViewById(R.id.value);
                                         int n = number.getValue();
-                                        stockArray.get(position).subAmmount(n);
+                                        adapter.getItem(position).subAmmount(n);
+                                        adapter.notifyDataSetChanged();
                                         portfolio.saveData();
                                     }
                                 })
