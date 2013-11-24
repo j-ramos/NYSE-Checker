@@ -24,5 +24,20 @@
     <string name="title_activity_chart_statistics_portfolio">Portfolio</string>
 
     <string name="current_portfolio">Current Portfolio</string>
-    <string name="portfolio_30_day">30 day portfolio </string>
+    <string name="portfolio_30_day">30 day portfolio </string><string name="acronym">Acronym</string>
+    <string name="quantidade">Quantidade</string>
+    <string name="add">Adicionar</string>
+    <string name="action_refresh">Actualizar</string>
+    <string-array
+        name="array_acronym">
+        <item>IBM</item>
+        <item>MSFT</item>
+        <item>DELL</item>
+        <item>CSCO</item>
+        <item>AMZN</item>
+        <item>HPQ</item>
+        <item>GOOG</item>
+        <item>AAPL</item>
+        <item>ORCL</item>
+    </string-array>
 </resources>

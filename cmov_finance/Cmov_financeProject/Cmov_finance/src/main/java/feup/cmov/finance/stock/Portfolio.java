@@ -26,12 +26,10 @@ public class Portfolio extends Application{
 
     @Override
     public void onCreate() {
-        Log.d("teste", "asd");
         super.onCreate();
         stocks = new HashMap<String, Stock>();
 
         FileInputStream inputStream;
-        filename = "dataPortefolio";
         try {
             inputStream = new FileInputStream(filename);
             ObjectInputStream s = new ObjectInputStream(inputStream);
@@ -40,12 +38,9 @@ public class Portfolio extends Application{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d("teste", "q1eqw");
     }
 
-    @Override
-    public void onTerminate() {
-        File file = new File(getApplicationContext().getFilesDir(), filename);
+    public void saveData() {
         super.onTerminate();
         FileOutputStream outputStream;
 
@@ -54,7 +49,6 @@ public class Portfolio extends Application{
             ObjectOutputStream oos = new ObjectOutputStream(outputStream);
             oos.writeObject(stocks);
             outputStream.close();
-            Log.d("teste", "gravou");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -21,11 +21,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.PopupMenu;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -61,7 +66,6 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
         portfolio = (Portfolio) getApplication();
         portfolio.createStock("AAPL", 150);
         portfolio.createStock("IBM", 12);
@@ -69,10 +73,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         portfolio.createStock("CSCO", 120);
         portfolio.createStock("AMZN", 20);
         portfolio.createStock("GOOG", 25);
-
         stocks = portfolio.getStocksHashMap();
-
-
         listView = (ListView) findViewById(R.id.list);
 
         stockArray = new ArrayList<Stock>(stocks.values());
@@ -88,16 +89,18 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 startActivity(intent);
             }
         });
-        final Handler handler = new Handler();
+        refreshData(new Handler());
+    }
+    public void refreshData(Handler handler){
+        final Handler h = handler;
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                new CurrentValueStock(handler).run();
+                new CurrentValueStock(h).run();
             }
         });
         thread.start();
     }
-
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         //TODO fazer menu
@@ -144,35 +147,112 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         return super.onCreateOptionsMenu(menu);
     }
 
-    private class SuggestionsAdapter extends CursorAdapter {
 
-        public SuggestionsAdapter(Context context, Cursor c) {
-            super(context, c, 0);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View v = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-            return v;
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            TextView tv = (TextView) view;
-            final int textIndex = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1);
-            tv.setText(cursor.getString(textIndex));
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId())
+        {
+            case R.id.action_new:
+                addStock();
+                return true;
+            case R.id.action_refresh:
+                Handler handler = getWindow().getDecorView().getHandler();
+                refreshData(handler);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
+
+
+    public void addStock()
+    {
+        Dialog dialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(PortefolioActivity.this);
+        // Get the layout inflater
+        LayoutInflater inflater = PortefolioActivity.this.getLayoutInflater();
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        final View view = inflater.inflate(R.layout.dialog_new, null);
+        String[] array= getResources().getStringArray(R.array.array_acronym);
+        Spinner spinner = (Spinner) view.findViewById(R.id.spinnername);
+        ArrayAdapter spinnerArrayAdapter = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item,
+                array);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+
+        RadioButton inputRadio = (RadioButton)view.findViewById(R.id.radio_text);
+        RadioButton spinnerRadio = (RadioButton) view.findViewById(R.id.radio_sppiner);
+        inputRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                EditText text = (EditText) view.findViewById(R.id.textname);
+                Spinner spinnerc = (Spinner) view.findViewById(R.id.spinnername);
+                if (isChecked)
+                {
+
+                    text.setClickable(true);
+                    text.setFocusable(true);
+                    text.setEnabled(true);
+                    text.setFocusableInTouchMode(true);
+                    text.requestFocus();
+                    spinnerc.setClickable(false);
+                    spinnerc.setFocusable(false);
+                }
+                else
+                {
+                    text.setClickable(false);
+                    text.setFocusable(false);
+                    spinnerc.setClickable(true);
+                    spinnerc.setFocusable(true);
+                    spinnerc.requestFocus();
+                }
+            }
+        });
+
+
+        builder.setView(view)
+                // Add action buttons
+                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        RadioGroup radioButtonGroup = (RadioGroup) view.findViewById(R.id.radiogroup);
+                        int radioButtonID = radioButtonGroup.getCheckedRadioButtonId();
+                        String value;
+                        if (radioButtonID == R.id.radio_sppiner) {
+                            Spinner spinners = (Spinner) view.findViewById(R.id.spinnername);
+                            value = (String) spinners.getSelectedItem();
+                        } else {
+                            EditText texts = (EditText) view.findViewById(R.id.textname);
+                            value = texts.getText().toString();
+                        }
+                        EditText quantidadet = (EditText) view.findViewById(R.id.quantidade);
+                        String quantidade = quantidadet.getText().toString();
+                        int quantidadeInt = Integer.parseInt(quantidade);
+
+                        portfolio.createStock(value.toUpperCase(), quantidadeInt);
+                        portfolio.saveData();
+                        stocks = portfolio.getStocksHashMap();
+                        adapter.add(new Stock(value.toUpperCase(), quantidadeInt));
+                        adapter.notifyDataSetChanged();
+                        refreshData(getWindow().getDecorView().getHandler());
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        dialog =  builder.create();
+        dialog.show();
+    }
 
     public class PortfolioAdapter extends ArrayAdapter<Stock> {
 
@@ -242,13 +322,16 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
 
                         // Inflate and set the layout for the dialog
                         // Pass null as the parent view because its going in the dialog layout
-                        View view = inflater.inflate(R.layout.dialog, null);
+                        final View view = inflater.inflate(R.layout.dialog, null);
                         builder.setView(view)
                                 // Add action buttons
                                 .setPositiveButton(R.string.sell, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        //Todo sell
+                                        NumberPicker number = (NumberPicker)view.findViewById(R.id.value);
+                                        int n = number.getValue();
+                                        stockArray.get(position).subAmmount(n);
+                                        portfolio.saveData();
                                     }
                                 })
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -256,7 +339,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                                         dialog.cancel();
                                     }
                                 });
-                        NumberPicker numberPicker=(NumberPicker)view.findViewById(R.id.value);
+                        final NumberPicker numberPicker=(NumberPicker)view.findViewById(R.id.value);
                         TextView title = (TextView)view.findViewById(R.id.title);
                         title.setText("Venda");
                         numberPicker.setMinValue(0);
@@ -272,13 +355,16 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
 
                         // Inflate and set the layout for the dialog
                         // Pass null as the parent view because its going in the dialog layout
-                        View viewBuy = inflaterBuy.inflate(R.layout.dialog, null);
+                        final View viewBuy = inflaterBuy.inflate(R.layout.dialog, null);
                         builderBuy.setView(viewBuy)
                                 // Add action buttons
                                 .setPositiveButton(R.string.buy, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        //Todo buy
+                                        NumberPicker number = (NumberPicker)viewBuy.findViewById(R.id.value);
+                                        int n = number.getValue();
+                                        stockArray.get(position).subAmmount(n);
+                                        portfolio.saveData();
                                     }
                                 })
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -286,7 +372,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                                         dialog.cancel();
                                     }
                                 });
-                        NumberPicker numberPickerBuy=(NumberPicker)viewBuy.findViewById(R.id.value);
+                        final NumberPicker numberPickerBuy=(NumberPicker)viewBuy.findViewById(R.id.value);
                         TextView titleBuy = (TextView)viewBuy.findViewById(R.id.title);
                         titleBuy.setText("Compra");
                         numberPickerBuy.setMinValue(0);
@@ -311,6 +397,8 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
 
         @Override
         public void run() {
+            if(stocks.size()==0)
+                return;
             Network network = new Network();
             String query = "http://finance.yahoo.com/d/quotes?f=sl1d1t1v&s=";
             String args ="";
