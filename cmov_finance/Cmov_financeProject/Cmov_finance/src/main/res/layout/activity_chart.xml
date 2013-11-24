@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
@@ -11,10 +8,51 @@
         android:id ="@+id/chart">
 
     </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Gráfico!!!"
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal"/>
-</LinearLayout>
+    <GridLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id ="@+id/infoBox">
+
+
+        <GridLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:orientation="horizontal"
+            android:rowCount="3"
+            android:layout_gravity="center|bottom"
+            android:padding="15dp"
+            android:background="@drawable/rounded_corner"
+            android:layout_marginBottom="20dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:text="Name"
+                    android:id="@+id/stockName"
+                    android:layout_row="0"
+                    android:layout_column="0" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Stock Value"
+                    android:id="@+id/stockValue"
+                    android:layout_row="1"
+                    android:layout_column="0" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="History"
+                android:id="@+id/buttonCheckStats"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_rowSpan="2"
+                android:layout_gravity="right"/>
+
+        </GridLayout >
+
+    </GridLayout>
+</merge>
