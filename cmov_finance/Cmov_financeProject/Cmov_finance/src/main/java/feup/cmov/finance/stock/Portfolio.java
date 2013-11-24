@@ -2,6 +2,7 @@ package feup.cmov.finance.stock;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -28,10 +29,11 @@ public class Portfolio extends Application{
     public void onCreate() {
         super.onCreate();
         stocks = new HashMap<String, Stock>();
-
+        filename = "/saveData";
+        File yourFile = new File( Environment.getExternalStorageDirectory()+ filename);
         FileInputStream inputStream;
         try {
-            inputStream = new FileInputStream(filename);
+            inputStream = new FileInputStream(yourFile);
             ObjectInputStream s = new ObjectInputStream(inputStream);
             stocks = (HashMap<String,Stock>)s.readObject();
             inputStream.close();
@@ -43,9 +45,13 @@ public class Portfolio extends Application{
     public void saveData() {
         super.onTerminate();
         FileOutputStream outputStream;
-
+        filename = "/saveData";
+        File yourFile = new File( Environment.getExternalStorageDirectory()+ filename);
         try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            if(!yourFile.exists()) {
+                yourFile.createNewFile();
+            }
+            outputStream = new FileOutputStream(yourFile, false);
             ObjectOutputStream oos = new ObjectOutputStream(outputStream);
             oos.writeObject(stocks);
             outputStream.close();

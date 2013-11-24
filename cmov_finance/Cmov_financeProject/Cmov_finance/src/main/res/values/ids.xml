@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="chart" type="id">chart</item><item name="radiogroup" type="id">radiogroup</item>
+    <item name="chart_view" type="id">chart_view</item>
 </resources>
