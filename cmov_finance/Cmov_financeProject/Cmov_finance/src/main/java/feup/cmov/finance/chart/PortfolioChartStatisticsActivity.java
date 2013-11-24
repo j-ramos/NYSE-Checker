@@ -96,7 +96,7 @@ public class PortfolioChartStatisticsActivity extends Activity {
         renderer.setInScroll(false);
         renderer.setStartAngle(180);
         renderer.setAntialiasing(true);
-        renderer.setClickEnabled(true);
+        renderer.setClickEnabled(false);
         renderer.setSelectableBuffer(portfolio.getWalletSize());
 
         renderer.setLabelsTextSize(22);
@@ -140,41 +140,14 @@ public class PortfolioChartStatisticsActivity extends Activity {
             mChart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    /*
-                    SeriesSelection seriesSelection = mChart.getCurrentSeriesAndPoint();
-                    if (seriesSelection != null) {
-                        selectedPie = seriesSelection.getPointIndex();
-                        for (int i = 0; i < mCurrentSeries.getItemCount(); i++) {
-                            renderer.getSeriesRendererAt(i).setHighlighted(i == seriesSelection.getPointIndex());
-                            renderer.getSeriesRendererAt(i).setDisplayChartValuesDistance(BIND_ABOVE_CLIENT);
-                        }
-                        mChart.repaint();
-                        final TextView textStockName = (TextView) findViewById(R.id.stockName);
-                        textStockName.setText( portfolio.getStocks().get(selectedPie).getAcronym() + portfolio.getWalletSize());
-                        textStockName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-                        final TextView textStockValue = (TextView) findViewById(R.id.stockValue);
-                        textStockValue.setText(((Float) portfolio.getStocks().get(selectedPie).getTotalValue()).toString() + " €");
-                        textStockName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
-
-                        final Button buttonCheckStats = (Button) findViewById(R.id.buttonCheckStats);
-                        buttonCheckStats.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Stock s = portfolio.getStocks().get(selectedPie);
-                                Intent intent = new Intent(PortfolioChartStatisticsActivity.this, ChartStockActivity.class);
-                                intent.putExtra("stock", s);
-                                startActivity(intent);
-                            }
-                        });
-                    }
-*/
                 }
             });
 
-            renderer.getSeriesRendererAt(0).setHighlighted(true);
+            //renderer.getSeriesRendererAt(0).setHighlighted(true);
+
             mChart.repaint();
+            setSelectedPie(selectedPie);
 
 
             layout.addView(mChart);
@@ -183,8 +156,41 @@ public class PortfolioChartStatisticsActivity extends Activity {
         }
 
     }
+    private void removePieHiglights() {
+        for (int i = 0; i < portfolio.getWalletSize(); i++) {
+            renderer.getSeriesRendererAt(i).setHighlighted(false);
+            renderer.getSeriesRendererAt(i).setDisplayChartValuesDistance(BIND_ABOVE_CLIENT);
+        }
+
+    }
+    private void setSelectedPie(int pie) {
+        selectedPie = pie;
+        renderer.getSeriesRendererAt(selectedPie).setHighlighted(true);
+        renderer.getSeriesRendererAt(selectedPie).setStroke(BasicStroke.SOLID);
+        mChart.repaint();
+
+        Log.d("SELECTED PIE: ", selectedPie + " / " + portfolio.getStocks().get(pie).getAcronym());
+
+        final TextView textStockName = (TextView) findViewById(R.id.stockName);
+        textStockName.setText(portfolio.getStocks().get(selectedPie).getAcronym());
+        textStockName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        final TextView textStockValue = (TextView) findViewById(R.id.stockValue);
+        textStockValue.setText(((Float) portfolio.getStocks().get(selectedPie).getTotalValue()).toString() + " €");
+        textStockName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
 
+        final Button buttonCheckStats = (Button) findViewById(R.id.buttonCheckStats);
+        buttonCheckStats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Stock s = portfolio.getStocks().get(selectedPie);
+                Intent intent = new Intent(PortfolioChartStatisticsActivity.this, ChartStockActivity.class);
+                intent.putExtra("stock", s);
+                startActivity(intent);
+            }
+        });
+    }
     class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -195,49 +201,20 @@ public class PortfolioChartStatisticsActivity extends Activity {
                     // LEFT SWIPE
 
                     renderer.getSeriesRendererAt(selectedPie).setHighlighted(false);
-                    renderer.getSeriesRendererAt(selectedPie).setStroke(null);
-
                     if(selectedPie < portfolio.getWalletSize() - 1)
                         selectedPie++;
                     else
                         selectedPie = 0;
 
-                    //Toast.makeText(getApplicationContext(), "Left Swipe", Toast.LENGTH_SHORT).show();
                 }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    renderer.getSeriesRendererAt(selectedPie).setHighlighted(false);
-                    renderer.getSeriesRendererAt(selectedPie).setStroke(null);
 
+                    renderer.getSeriesRendererAt(selectedPie).setHighlighted(false);
                     if(selectedPie > 0)
                         selectedPie--;
                     else
                         selectedPie = portfolio.getWalletSize() - 1;
-
-                   // Toast.makeText(getApplicationContext(), "Right Swipe", Toast.LENGTH_SHORT).show();
-
                 }
-
-                renderer.getSeriesRendererAt(selectedPie).setHighlighted(true);
-                renderer.getSeriesRendererAt(selectedPie).setStroke(BasicStroke.SOLID);
-
-                final TextView textStockName = (TextView) findViewById(R.id.stockName);
-                textStockName.setText(portfolio.getStocks().get(selectedPie).getAcronym());
-                textStockName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
-                final TextView textStockValue = (TextView) findViewById(R.id.stockValue);
-                textStockValue.setText(((Float) portfolio.getStocks().get(selectedPie).getTotalValue()).toString() + " €");
-                textStockName.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
-
-                final Button buttonCheckStats = (Button) findViewById(R.id.buttonCheckStats);
-                buttonCheckStats.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Stock s = portfolio.getStocks().get(selectedPie);
-                        Intent intent = new Intent(PortfolioChartStatisticsActivity.this, ChartStockActivity.class);
-                        intent.putExtra("stock", s);
-                        startActivity(intent);
-                    }
-                });
+                setSelectedPie(selectedPie);
             } catch (Exception e) {
                 // nothing
             }
