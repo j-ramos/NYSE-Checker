@@ -25,27 +25,28 @@ public class Portefolio extends Application{
 
     }
 
+    public void setStocks(HashMap<String, Stock> stocks) {
+        this.stocks = stocks;
+    }
+
     @Override
     public void onCreate() {
-        Log.d("teste", "asd");
         super.onCreate();
 
         FileInputStream inputStream;
         filename = "dataPortefolio";
         try {
-            inputStream = FileInputStream(filename);
+            inputStream = openFileInput(filename);
             ObjectInputStream s = new ObjectInputStream(inputStream);
             stocks = (HashMap<String,Stock>)s.readObject();
             inputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d("teste", "q1eqw");
     }
 
-    @Override
-    public void onTerminate() {
-        File file = new File(getApplicationContext().getFilesDir(), filename);
+
+    public void saveData() {
         super.onTerminate();
         FileOutputStream outputStream;
 
@@ -54,11 +55,11 @@ public class Portefolio extends Application{
             ObjectOutputStream oos = new ObjectOutputStream(outputStream);
             oos.writeObject(stocks);
             outputStream.close();
-            Log.d("teste", "gravou");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public HashMap<String, Stock> getStock()
     {
         return stocks;

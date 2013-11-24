@@ -59,16 +59,16 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-        stocks = new HashMap<String, Stock>();
+        /*stocks = new HashMap<String, Stock>();
         stocks.put("AAPL", new Stock("AAPL", 150));
         stocks.put("IBM", new Stock("IBM", 12));
         stocks.put("DELL", new Stock("DELL", 15));
         stocks.put("CSCO", new Stock("CSCO", 120));
         stocks.put("AMZN", new Stock("AMZN", 20));
-        stocks.put("GOOG", new Stock("GOOG", 25));
+        stocks.put("GOOG", new Stock("GOOG", 25));*/
         listView = (ListView) findViewById(R.id.list);
         Portefolio portefolio = (Portefolio)getApplication();
-        HashMap<String, Stock> asd = portefolio.getStock();
+        stocks = portefolio.getStock();
         stockArray = new ArrayList<Stock>(stocks.values());
         adapter = new PortefolioAdapter(this , R.layout.list_item, stockArray);
         listView.setAdapter(adapter);
