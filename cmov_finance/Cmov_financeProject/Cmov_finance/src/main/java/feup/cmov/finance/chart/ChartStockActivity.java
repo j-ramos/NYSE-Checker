@@ -80,7 +80,7 @@ public class ChartStockActivity extends Activity {
 
         if (mChart == null) {
             initChart();
-            mChart = ChartFactory.getBarChartIntent(this, mDataset, mRenderer, 0.3f);
+            //mChart = ChartFactory.getBarChartIntent(this, mDataset, mRenderer, 0.3f);
             //mChart = ChartFactory.getPieChartView(this, mCurrentSeries, renderer);
             //mChart = ChartFactory.getPieChartView(this, mCurrentSeries, renderer);
             layout.addView(mChart);

@@ -67,12 +67,12 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
         portfolio = (Portfolio) getApplication();
-        portfolio.createStock("AAPL", 150);
+        /*portfolio.createStock("AAPL", 150);
         portfolio.createStock("IBM", 12);
         portfolio.createStock("DELL", 15);
         portfolio.createStock("CSCO", 120);
         portfolio.createStock("AMZN", 20);
-        portfolio.createStock("GOOG", 25);
+        portfolio.createStock("GOOG", 25);*/
         stocks = portfolio.getStocksHashMap();
         listView = (ListView) findViewById(R.id.list);
 
