@@ -60,6 +60,7 @@
                 android:value="feup.cmov.finance.share.PortefolioActivity" />
         </activity>
         <activity android:name="org.achartengine.GraphicalActivity" />
+        <activity android:name="feup.cmov.finance.chart.StockEvolutionActivity" />
     </application>
 
 </manifest>
