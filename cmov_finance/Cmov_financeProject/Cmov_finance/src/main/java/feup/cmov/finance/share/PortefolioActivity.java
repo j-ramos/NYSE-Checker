@@ -72,7 +72,8 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         portfolio.createStock("DELL", 15);
         portfolio.createStock("CSCO", 120);
         portfolio.createStock("AMZN", 20);
-        portfolio.createStock("GOOG", 25);*/
+        portfolio.createStock("GOOG", 25);
+        portfolio.saveData();*/
         stocks = portfolio.getStocksHashMap();
         listView = (ListView) findViewById(R.id.list);
 

@@ -1,7 +1,7 @@
 package feup.cmov.finance.stock;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * Created by Tiago on 19-11-2013.

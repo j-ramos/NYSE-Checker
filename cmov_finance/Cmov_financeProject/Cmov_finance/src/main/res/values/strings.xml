@@ -28,6 +28,7 @@
     <string name="quantidade">Quantidade</string>
     <string name="add">Adicionar</string>
     <string name="action_refresh">Actualizar</string>
+    <string name="progress">A obter dados</string>
     <string-array
         name="array_acronym">
         <item>IBM</item>

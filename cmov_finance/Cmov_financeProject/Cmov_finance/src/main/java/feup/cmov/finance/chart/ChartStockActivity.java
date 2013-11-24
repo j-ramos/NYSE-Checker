@@ -2,29 +2,33 @@ package feup.cmov.finance.chart;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.view.View;
 import android.widget.LinearLayout;
 
 
-import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
+import org.achartengine.chart.PointStyle;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Random;
 
 import feup.cmov.cmov_finance.R;
@@ -37,8 +41,6 @@ import feup.cmov.finance.stock.Value;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.BarChart.Type;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYMultipleSeriesRenderer.Orientation;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 public class ChartStockActivity extends Activity {
@@ -55,6 +57,8 @@ public class ChartStockActivity extends Activity {
     private CategorySeries mCurrentSeries;
     private XYMultipleSeriesDataset mDataset;
     protected Portfolio portfolio;
+    private ArrayList<Double> valores;
+    private float[] values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,7 @@ public class ChartStockActivity extends Activity {
         Intent intent = getIntent();
         stock = (Stock) intent.getSerializableExtra("stock");
         final Handler h = new Handler();
+        valores = new ArrayList<Double>();
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -75,18 +80,6 @@ public class ChartStockActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
-
-
-        if (mChart == null) {
-            initChart();
-            //mChart = ChartFactory.getBarChartIntent(this, mDataset, mRenderer, 0.3f);
-            //mChart = ChartFactory.getPieChartView(this, mCurrentSeries, renderer);
-            //mChart = ChartFactory.getPieChartView(this, mCurrentSeries, renderer);
-            layout.addView(mChart);
-        } else {
-            mChart.repaint();
-        }
 
     }
 
@@ -131,22 +124,41 @@ public class ChartStockActivity extends Activity {
             final String res = network.get(query);
             String[] sStocks = res.split("\\r?\\n");
             ArrayList<Value> history= new ArrayList<Value>();
-            for(int i=0; i < sStocks.length; i++)
+            for(int i=1; i < sStocks.length; i++)
             {
                 //Date,Open,High,Low,Close,Volume,Adj Close
                 String[] t = sStocks[i].split(",");
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                try {
-                    Date date = sdf.parse(t[0]);
-                    Float f= Float.valueOf(t[4].trim()).floatValue();
-                    Value value = new Value(f, date);
-                    history.add(value);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                Date date = Date.valueOf(t[0]);
+
+                Float f= Float.valueOf(t[4].trim()).floatValue();
+                Value value = new Value(f, date);
+                history.add(value);
 
             }
             stock.setHistory(history);
+
+            handler_.post(new Runnable() {
+                @Override
+                public void run() {
+                    LinearLayout status = (LinearLayout) findViewById(R.id.status);
+                    status.setVisibility(View.GONE);
+                    LinearLayout linear_view = (LinearLayout) findViewById(R.id.chart_view);
+                    linear_view.setVisibility(View.VISIBLE);
+                    LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
+                    if (mChart == null) {
+                        initChart();
+                        Double temp = Collections.min(valores);
+                        if((temp - 20.f)>0)
+                            mRenderer.setYAxisMin(temp-20.f);
+                        else
+                            mRenderer.setYAxisMin(0);
+                        mChart = ChartFactory.getBarChartView(getApplicationContext(), mDataset, mRenderer, Type.DEFAULT);
+                        layout.addView(mChart);
+                    } else {
+                        mChart.repaint();
+                    }
+                }
+            });
         }
     }
 
@@ -193,20 +205,49 @@ public class ChartStockActivity extends Activity {
 
 
         mCurrentSeries = new CategorySeries("Portfolio");
+        mDataset = new XYMultipleSeriesDataset();
         addData();
-        mRenderer = buildBarRenderer(portfolio.getWalletSize()); // gera as cores para cada acção
+        mDataset.addSeries(mCurrentSeries.toXYSeries());
+        XYSeriesRenderer renderer = new XYSeriesRenderer();     // one renderer for one series
+        renderer.setColor(Color.RED);
+        renderer.setDisplayChartValues(true);
 
-        mRenderer.setChartTitle("");
+        renderer.setPointStyle(PointStyle.DIAMOND);
+        renderer.setFillPoints(true);
+        renderer.setColor(Color.argb(100, 35, 25, 250));
+        renderer.setLineWidth(5.0f);
+        XYSeriesRenderer.FillOutsideLine fill = new XYSeriesRenderer.FillOutsideLine(XYSeriesRenderer.FillOutsideLine.Type.BOUNDS_ALL);
+        fill.setColor(Color.argb(20, 255, 255, 255));
+        renderer.addFillOutsideLine(fill);
 
-        mRenderer.setPanEnabled(true);// Disable User Interaction
-        mRenderer.setLabelsColor(Color.BLACK);
+
+        mRenderer = new XYMultipleSeriesRenderer();   // collection multiple values for one renderer or series
+        mRenderer.setApplyBackgroundColor(true);
+        mRenderer.setBackgroundColor(Color.argb(0, 50, 50, 50));
+        mRenderer.addSeriesRenderer(renderer);
+        mRenderer.setChartTitle("Valor a 30 dias");
+        mRenderer.setYTitle("€");
+        mRenderer.setZoomButtonsVisible(false);
         mRenderer.setShowLegend(false);
-        mRenderer.setInScroll(false);
-        mRenderer.setStartAngle(180);
-        mRenderer.setZoomRate(1);
-        mRenderer.setLabelsTextSize(22);
-        mRenderer.setOrientation(XYMultipleSeriesRenderer.Orientation.VERTICAL);
-        mRenderer.setYLabels(10);
+        mRenderer.setShowGridX(true);      // this will show the grid in  graph
+        mRenderer.setApplyBackgroundColor(true);
+        mRenderer.setBackgroundColor(Color.BLACK);
+        mRenderer.setXAxisMin(0);
+        mRenderer.setXLabels(0);
+
+        mRenderer.setAxisTitleTextSize(35);
+        mRenderer.setPointSize(0);
+        mRenderer.setPanEnabled(false, false);
+        mRenderer.setZoomEnabled(false, false);
+        mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
+        mRenderer.setXLabelsPadding(30);
+        mRenderer.setMarginsColor(Color.argb(0, 50, 50, 50));
+        ArrayList<Value> history= stock.getHistory();
+        for(int i= 0; i < history.size(); i++)
+        {
+            mRenderer.addXTextLabel(i+1,history.get(i).getDate().toString());
+        }
+        mRenderer.setPanEnabled(true, true);
 
     }
 
@@ -219,12 +260,15 @@ public class ChartStockActivity extends Activity {
         {
             Value v= history.get(i);
             Double d = new Double(amount * v.getValue());
+            DecimalFormat df = new DecimalFormat("#.000");
+            String dformat = df.format(d);
+            d = Double.valueOf(dformat);
+            valores.add(d);
             mCurrentSeries.add(v.getDate().toString(), d);
+
         }
     }
 
-    // Chart vals
-    String chart_type;
     protected DefaultRenderer buildCategoryRenderer(int ncolors) {
         int interval = 360 / ncolors;
         int start = Color.rgb(0,0,0);
