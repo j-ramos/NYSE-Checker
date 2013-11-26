@@ -1,34 +1,34 @@
 package feup.cmov.finance.chart;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
 
-
+import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
+import org.achartengine.chart.BarChart.Type;
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.sql.Date;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.sql.Date;
 import java.util.Random;
 
 import feup.cmov.cmov_finance.R;
@@ -37,11 +37,6 @@ import feup.cmov.finance.connection.WebServiceCallRunnable;
 import feup.cmov.finance.stock.Portfolio;
 import feup.cmov.finance.stock.Stock;
 import feup.cmov.finance.stock.Value;
-
-
-import org.achartengine.ChartFactory;
-import org.achartengine.chart.BarChart.Type;
-import org.achartengine.renderer.XYSeriesRenderer;
 
 public class ChartStockActivity extends Activity {
 
@@ -259,10 +254,12 @@ public class ChartStockActivity extends Activity {
         for(int i =0; i < history.size(); i++)
         {
             Value v= history.get(i);
+            Log.d("AMMOUNT * VALUE: ", amount +","+ v.getValue());
             Double d = new Double(amount * v.getValue());
             DecimalFormat df = new DecimalFormat("#.000");
             String dformat = df.format(d);
-            d = Double.valueOf(dformat);
+            Log.d("valueof", dformat);
+            d = Double.valueOf(dformat.toString());
             valores.add(d);
             mCurrentSeries.add(v.getDate().toString(), d);
 

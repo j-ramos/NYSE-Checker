@@ -24,10 +24,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import feup.cmov.cmov_finance.R;
 import feup.cmov.finance.chart.PortfolioChartStatisticsActivity;
+import feup.cmov.finance.chart.StockEvolutionActivity;
 
 ;
 
@@ -250,8 +250,9 @@ public class NavigationDrawerFragment extends Fragment {
 
                 break;
             case 1:
-                Toast s = Toast.makeText(getActivity().getApplicationContext(), "30 Dias (Barras)", Toast.LENGTH_LONG);
-                s.show();
+                Intent myIntent2 = new Intent(getActivity().getApplicationContext(), StockEvolutionActivity.class);
+                myIntent2.putExtra("type", "Bars"); //Optional parameters
+                startActivity(myIntent2);
                 break;
             default:
                 return;

@@ -8,7 +8,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.BaseColumns;
@@ -22,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
@@ -67,13 +65,15 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
         portfolio = (Portfolio) getApplication();
-        /*portfolio.createStock("AAPL", 150);
+        portfolio.createStock("AAPL", 150);
         portfolio.createStock("IBM", 12);
         portfolio.createStock("DELL", 15);
         portfolio.createStock("CSCO", 120);
         portfolio.createStock("AMZN", 20);
         portfolio.createStock("GOOG", 25);
-        portfolio.saveData();*/
+        portfolio.saveData();
+
+
         stocks = portfolio.getStocksHashMap();
         listView = (ListView) findViewById(R.id.list);
 

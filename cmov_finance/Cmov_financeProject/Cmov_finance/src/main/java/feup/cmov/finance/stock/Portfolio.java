@@ -1,7 +1,6 @@
 package feup.cmov.finance.stock;
 
 import android.app.Application;
-import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -11,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -66,6 +66,25 @@ public class Portfolio extends Application{
 
     public ArrayList<Stock> getStocks(){
         return new ArrayList<Stock>(stocks.values());
+    }
+    
+    public int[] getWalletValue() {
+        int[] values = new int[30];
+        ArrayList<Stock> stockList = getStocks();
+        Arrays.fill(values, 0);
+        int Min = 100;
+        int Max = 250;
+
+        for(int i = 0; i < 30; i++) {
+            for(int j = 0; j < stockList.size(); j++) {
+               // values[i] = Min + (int)(Math.random() * ((Max - Min) + 1));
+                Log.d("stocks acr:", stockList.get(j).getAcronym()+"");
+                if(stocks.get(j).getHistory().get(i) != null)
+                    values[i] += stocks.get(j).getHistory().get(i).getValue();
+            }
+        }
+
+        return values;
     }
 
     public int getWalletSize() {

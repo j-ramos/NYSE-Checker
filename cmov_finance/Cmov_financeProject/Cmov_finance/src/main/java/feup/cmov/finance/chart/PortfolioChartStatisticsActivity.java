@@ -114,6 +114,7 @@ public class PortfolioChartStatisticsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
 
+
         portfolio = (Portfolio)getApplication();
 
         Intent intent = getIntent();
@@ -122,37 +123,40 @@ public class PortfolioChartStatisticsActivity extends Activity {
 
     protected void onResume() {
         super.onResume();
-        LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
+        if(portfolio.getWalletSize() > 0) {
+            LinearLayout chartLayout = (LinearLayout) findViewById(R.id.chart);
+            if (mChart == null) {
+                initChart();
+               // mChart = ChartFactory.getCubeLineChartView(this, mDataset, mRenderer, 0.3f);
+                mChart = ChartFactory.getPieChartView(this, mCurrentSeries, renderer);
+                gestureDetector = new GestureDetector(this, new MyGestureDetector());
+                mChart.setOnTouchListener(new View.OnTouchListener() {
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return gestureDetector.onTouchEvent(event);
+                    }
+                });
 
 
-        if (mChart == null) {
-            initChart();
-           // mChart = ChartFactory.getCubeLineChartView(this, mDataset, mRenderer, 0.3f);
-            mChart = ChartFactory.getPieChartView(this, mCurrentSeries, renderer);
-            gestureDetector = new GestureDetector(this, new MyGestureDetector());
-            mChart.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    return gestureDetector.onTouchEvent(event);
-                }
-            });
+
+                mChart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+
+                //renderer.getSeriesRendererAt(0).setHighlighted(true);
+
+                mChart.repaint();
+                setSelectedPie(selectedPie);
 
 
-            mChart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
-
-            //renderer.getSeriesRendererAt(0).setHighlighted(true);
-
-            mChart.repaint();
-            setSelectedPie(selectedPie);
-
-
-            layout.addView(mChart);
+                chartLayout.addView(mChart);
+            } else {
+                mChart.repaint();
+            }
         } else {
-            mChart.repaint();
+            // carteira vazia
         }
 
     }
@@ -201,18 +205,19 @@ public class PortfolioChartStatisticsActivity extends Activity {
                     // LEFT SWIPE
 
                     renderer.getSeriesRendererAt(selectedPie).setHighlighted(false);
-                    if(selectedPie < portfolio.getWalletSize() - 1)
-                        selectedPie++;
-                    else
-                        selectedPie = 0;
-
-                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-
-                    renderer.getSeriesRendererAt(selectedPie).setHighlighted(false);
                     if(selectedPie > 0)
                         selectedPie--;
                     else
                         selectedPie = portfolio.getWalletSize() - 1;
+
+
+                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+
+                    renderer.getSeriesRendererAt(selectedPie).setHighlighted(false);
+                    if(selectedPie < portfolio.getWalletSize() - 1)
+                        selectedPie++;
+                    else
+                        selectedPie = 0;
                 }
                 setSelectedPie(selectedPie);
             } catch (Exception e) {

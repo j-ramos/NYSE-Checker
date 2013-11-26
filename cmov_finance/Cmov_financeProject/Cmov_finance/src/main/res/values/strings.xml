@@ -18,13 +18,17 @@
     <string name="title_activity_search_results">Share</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_search">Search</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="signin">Adicionar</string>
     <string name="title_activity_chart_stock">Chart</string>
     <string name="title_activity_chart_statistics_portfolio">Portfolio</string>
 
+    <string name="pick_stocks">Pick Stocks</string>
+
     <string name="current_portfolio">Current Portfolio</string>
-    <string name="portfolio_30_day">30 day portfolio </string><string name="acronym">Acronym</string>
+    <string name="portfolio_30_day">30 day portfolio </string>
+    <string name="acronym">Acronym</string>
     <string name="quantidade">Quantidade</string>
     <string name="add">Adicionar</string>
     <string name="action_refresh">Actualizar</string>
