@@ -234,7 +234,7 @@ public class StockEvolutionActivity extends Activity {
 
 
                             multiRenderer.setPanEnabled(false);// Disable User Interaction
-                            multiRenderer.setShowLegend(false);
+                            multiRenderer.setShowLegend(true);
                             multiRenderer.setInScroll(false);
                             multiRenderer.setAntialiasing(true);
                             multiRenderer.setClickEnabled(false);
@@ -317,15 +317,15 @@ public class StockEvolutionActivity extends Activity {
                         // Creating a XYMultipleSeriesRenderer to customize the whole chart
                         multiRenderer.setXLabels(BIND_AUTO_CREATE);
                         multiRenderer.setYTitle("Combined ammount in Euros");
-                        multiRenderer.setBackgroundColor(Color.WHITE);
-                        multiRenderer.setMarginsColor(Color.WHITE);
+                        multiRenderer.setBackgroundColor(Color.argb(0x00, 0x01, 0x01, 0x01));
+                        multiRenderer.setMarginsColor(Color.argb(0x00, 0x01, 0x01, 0x01));
                         multiRenderer.setLabelsColor(Color.BLACK);
                         multiRenderer.setAxesColor(Color.BLACK);
                         multiRenderer.setXLabelsColor(Color.BLACK);
 
 
                         multiRenderer.setPanEnabled(false);// Disable User Interaction
-                        multiRenderer.setShowLegend(false);
+                        multiRenderer.setShowLegend(true);
                         multiRenderer.setInScroll(false);
                         multiRenderer.setAntialiasing(true);
                         multiRenderer.setClickEnabled(false);

@@ -99,6 +99,8 @@ public class PortfolioChartStatisticsActivity extends Activity {
         renderer.setClickEnabled(false);
         renderer.setSelectableBuffer(portfolio.getWalletSize());
 
+        renderer.setMargins(new int[]{ 80, 80, 150, 80 });
+
         renderer.setLabelsTextSize(22);
 
     }

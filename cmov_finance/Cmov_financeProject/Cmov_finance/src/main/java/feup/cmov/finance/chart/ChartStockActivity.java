@@ -24,7 +24,6 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.sql.Date;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -254,12 +253,14 @@ public class ChartStockActivity extends Activity {
         for(int i =0; i < history.size(); i++)
         {
             Value v= history.get(i);
-            Log.d("AMMOUNT * VALUE: ", amount +","+ v.getValue());
+            Log.d("AMMOUNT * VALUE: ", new Double(amount * v.getValue()).toString());
             Double d = new Double(amount * v.getValue());
-            DecimalFormat df = new DecimalFormat("#.000");
+
+            /*DecimalFormat df = new DecimalFormat("#.000");
             String dformat = df.format(d);
             Log.d("valueof", dformat);
-            d = Double.valueOf(dformat.toString());
+            d = Double.valueOf(dformat.toString());*/
+            d = (double)Math.round(d * 100) / 100;
             valores.add(d);
             mCurrentSeries.add(v.getDate().toString(), d);
 
