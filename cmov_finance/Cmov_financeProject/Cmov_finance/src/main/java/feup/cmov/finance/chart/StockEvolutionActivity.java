@@ -209,17 +209,6 @@ public class StockEvolutionActivity extends Activity {
                                     multiRenderer.addSeriesRenderer(dataInGraph.get(acronymsArray[i]).getKey());
                                 }
 
-
-                                /*
-                                if(isVisible.get(acronymsArray[i]) == 1) {
-                                    dataset.removeSeries(dataInGraph.get(acronymsArray[i]).getValue());
-                                    multiRenderer.removeSeriesRenderer(dataInGraph.get(acronymsArray[i]).getKey());
-                                    isVisible.put(acronymsArray[i],0);
-                                } else {
-                                    dataset.addSeries(dataInGraph.get(acronymsArray[i]).getValue());
-                                    multiRenderer.addSeriesRenderer(dataInGraph.get(acronymsArray[i]).getKey());
-                                    isVisible.put(acronymsArray[i], 1);
-                                }*/
                             }
 
 
@@ -272,6 +261,8 @@ public class StockEvolutionActivity extends Activity {
         public void run() {
             ArrayList<Stock> stocks  = portfolio.getStocks();
             for(int j = 0; j< stocks.size(); j++) {
+                if(!stocks.get(j).acronym.equals("DELL"))
+                {
                 Calendar now = GregorianCalendar.getInstance();
                 Calendar month  = GregorianCalendar.getInstance();
                 now.add(Calendar.MONTH, -1);
@@ -301,6 +292,7 @@ public class StockEvolutionActivity extends Activity {
                 }
                 stocks.get(j).setHistory(history);
                 Log.d("INFO", stocks.get(j).getAcronym() + " populated" + ", size of history" + stocks.get(j).getHistory().size());
+                }
             }
 
             handler_.post(new Runnable() {

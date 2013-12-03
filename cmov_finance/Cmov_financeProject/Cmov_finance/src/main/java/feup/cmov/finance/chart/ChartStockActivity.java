@@ -146,7 +146,7 @@ public class ChartStockActivity extends Activity {
                             mRenderer.setYAxisMin(temp-20.f);
                         else
                             mRenderer.setYAxisMin(0);
-                        mChart = ChartFactory.getBarChartView(getApplicationContext(), mDataset, mRenderer, Type.DEFAULT);
+                        mChart = ChartFactory.getLineChartView(getApplicationContext(), mDataset, mRenderer);
                         layout.addView(mChart);
                     } else {
                         mChart.repaint();
@@ -203,21 +203,14 @@ public class ChartStockActivity extends Activity {
         addData();
         mDataset.addSeries(mCurrentSeries.toXYSeries());
         XYSeriesRenderer renderer = new XYSeriesRenderer();     // one renderer for one series
-        renderer.setColor(Color.RED);
         renderer.setDisplayChartValues(true);
-
-        renderer.setPointStyle(PointStyle.DIAMOND);
+        renderer.setLineWidth(3);
         renderer.setFillPoints(true);
-        renderer.setColor(Color.argb(100, 35, 25, 250));
-        renderer.setLineWidth(5.0f);
-        XYSeriesRenderer.FillOutsideLine fill = new XYSeriesRenderer.FillOutsideLine(XYSeriesRenderer.FillOutsideLine.Type.BOUNDS_ALL);
-        fill.setColor(Color.argb(20, 255, 255, 255));
-        renderer.addFillOutsideLine(fill);
+        renderer.setColor(stock.color);
+        renderer.setPointStyle(PointStyle.CIRCLE);
 
 
         mRenderer = new XYMultipleSeriesRenderer();   // collection multiple values for one renderer or series
-        mRenderer.setApplyBackgroundColor(true);
-        mRenderer.setBackgroundColor(Color.argb(0, 50, 50, 50));
         mRenderer.addSeriesRenderer(renderer);
         mRenderer.setChartTitle("Valor a 30 dias");
         mRenderer.setYTitle("€");
@@ -225,23 +218,26 @@ public class ChartStockActivity extends Activity {
         mRenderer.setShowLegend(false);
         mRenderer.setShowGridX(true);      // this will show the grid in  graph
         mRenderer.setApplyBackgroundColor(true);
-        mRenderer.setBackgroundColor(Color.BLACK);
-        mRenderer.setXAxisMin(0);
-        mRenderer.setXLabels(0);
+        mRenderer.setXLabels(BIND_AUTO_CREATE);
 
-        mRenderer.setAxisTitleTextSize(35);
-        mRenderer.setPointSize(0);
-        mRenderer.setPanEnabled(false, false);
         mRenderer.setZoomEnabled(false, false);
-        mRenderer.setYLabelsAlign(Paint.Align.RIGHT);
-        mRenderer.setXLabelsPadding(30);
-        mRenderer.setMarginsColor(Color.argb(0, 50, 50, 50));
+        mRenderer.setBackgroundColor(Color.argb(0x00, 0x01, 0x01, 0x01));
+        mRenderer.setMarginsColor(Color.argb(0x00, 0x01, 0x01, 0x01));
+        mRenderer.setLabelsColor(Color.BLACK);
+        mRenderer.setAxesColor(Color.BLACK);
+        mRenderer.setXLabelsColor(Color.BLACK);
+
+        mRenderer.setPanEnabled(false, false);// Disable User Interaction
+        mRenderer.setShowLegend(true);
+        mRenderer.setInScroll(false);
+        mRenderer.setAntialiasing(true);
+        mRenderer.setClickEnabled(false);
+
         ArrayList<Value> history= stock.getHistory();
         for(int i= 0; i < history.size(); i++)
         {
             mRenderer.addXTextLabel(i+1,history.get(i).getDate().toString());
         }
-        mRenderer.setPanEnabled(true, true);
 
     }
 
