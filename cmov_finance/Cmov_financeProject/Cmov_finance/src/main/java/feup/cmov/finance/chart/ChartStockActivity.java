@@ -31,6 +31,7 @@ import java.util.Random;
 import feup.cmov.cmov_finance.R;
 import feup.cmov.finance.connection.Network;
 import feup.cmov.finance.connection.WebServiceCallRunnable;
+import feup.cmov.finance.share.PortefolioActivity;
 import feup.cmov.finance.stock.Portfolio;
 import feup.cmov.finance.stock.Stock;
 import feup.cmov.finance.stock.Value;
@@ -103,12 +104,17 @@ public class ChartStockActivity extends Activity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(ChartStockActivity.this, PortefolioActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right,R.animator.slide_out_left);
+                return true;
+        }
+        return false;
     }
 
     public class RetriveData extends WebServiceCallRunnable{

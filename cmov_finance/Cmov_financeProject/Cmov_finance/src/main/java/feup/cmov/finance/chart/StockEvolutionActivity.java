@@ -5,11 +5,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +36,7 @@ import java.util.Random;
 import feup.cmov.cmov_finance.R;
 import feup.cmov.finance.connection.Network;
 import feup.cmov.finance.connection.WebServiceCallRunnable;
+import feup.cmov.finance.share.PortefolioActivity;
 import feup.cmov.finance.stock.Portfolio;
 import feup.cmov.finance.stock.Stock;
 import feup.cmov.finance.stock.Value;
@@ -87,6 +90,19 @@ public class StockEvolutionActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
        // getMenuInflater().inflate(R.menu.truiton_achart_engine, menu);
         return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(StockEvolutionActivity.this, PortefolioActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right,R.animator.slide_out_left);
+                return true;
+        }
+        return false;
     }
 
     private void createChart() {
@@ -261,37 +277,37 @@ public class StockEvolutionActivity extends Activity {
         public void run() {
             ArrayList<Stock> stocks  = portfolio.getStocks();
             for(int j = 0; j< stocks.size(); j++) {
-                if(!stocks.get(j).acronym.equals("DELL"))
+                if(stocks.get(j).getHistory().size()==0)
                 {
-                Calendar now = GregorianCalendar.getInstance();
-                Calendar month  = GregorianCalendar.getInstance();
-                now.add(Calendar.MONTH, -1);
-                Network network = new Network();
-                String query = "http://ichart.finance.yahoo.com/table.txt?";
-                String initialyear = "&c=" + now.get(Calendar.YEAR);
-                String initialmonth = "a=" + now.get(Calendar.MONTH);
-                String initialday = "&b=" + now.get(Calendar.DAY_OF_MONTH);
-                String finalyear = "&f=" + month.get(Calendar.YEAR);
-                String finalmonth = "&d=" + month.get(Calendar.MONTH);
-                String finalday = "&e=" + month.get(Calendar.DAY_OF_MONTH);
-                String name = "&s=" +  stocks.get(j).acronym;
-                query = query  + initialmonth + initialday + initialyear + finalmonth + finalday + finalyear + name + "&g=d";
-                final String res = network.get(query);
-                String[] sStocks = res.split("\\r?\\n");
-                ArrayList<Value> history= new ArrayList<Value>();
-                for(int i=1; i < sStocks.length; i++)
-                {
-                    //Date,Open,High,Low,Close,Volume,Adj Close
-                    String[] t = sStocks[i].split(",");
-                    Date date = Date.valueOf(t[0]);
+                    Calendar now = GregorianCalendar.getInstance();
+                    Calendar month  = GregorianCalendar.getInstance();
+                    now.add(Calendar.MONTH, -1);
+                    Network network = new Network();
+                    String query = "http://ichart.finance.yahoo.com/table.txt?";
+                    String initialyear = "&c=" + now.get(Calendar.YEAR);
+                    String initialmonth = "a=" + now.get(Calendar.MONTH);
+                    String initialday = "&b=" + now.get(Calendar.DAY_OF_MONTH);
+                    String finalyear = "&f=" + month.get(Calendar.YEAR);
+                    String finalmonth = "&d=" + month.get(Calendar.MONTH);
+                    String finalday = "&e=" + month.get(Calendar.DAY_OF_MONTH);
+                    String name = "&s=" +  stocks.get(j).acronym;
+                    query = query  + initialmonth + initialday + initialyear + finalmonth + finalday + finalyear + name + "&g=d";
+                    final String res = network.get(query);
+                    String[] sStocks = res.split("\\r?\\n");
+                    ArrayList<Value> history= new ArrayList<Value>();
+                    for(int i=1; i < sStocks.length; i++)
+                    {
+                        //Date,Open,High,Low,Close,Volume,Adj Close
+                        String[] t = sStocks[i].split(",");
+                        Date date = Date.valueOf(t[0]);
 
-                    Float f= Float.valueOf(t[4].trim()).floatValue();
-                    Value value = new Value(f, date);
-                    history.add(value);
+                        Float f= Float.valueOf(t[4].trim()).floatValue();
+                        Value value = new Value(f, date);
+                        history.add(value);
 
-                }
-                stocks.get(j).setHistory(history);
-                Log.d("INFO", stocks.get(j).getAcronym() + " populated" + ", size of history" + stocks.get(j).getHistory().size());
+                    }
+                    stocks.get(j).setHistory(history);
+                    Log.d("INFO", stocks.get(j).getAcronym() + " populated" + ", size of history" + stocks.get(j).getHistory().size());
                 }
             }
 

@@ -133,6 +133,8 @@ public class NavigationDrawerFragment extends Fragment {
             {
                 LayoutInflater inflater = ((Activity)context).getLayoutInflater();
                 row = inflater.inflate(R.layout.title, parent, false);
+                row.setEnabled(false);
+                row.setClickable(false);
                 return row;
             }
 
@@ -253,12 +255,13 @@ public class NavigationDrawerFragment extends Fragment {
                 Intent myIntent = new Intent(getActivity().getApplicationContext(), PortfolioChartStatisticsActivity.class);
                 myIntent.putExtra("type", "Circular"); //Optional parameters
                 startActivity(myIntent);
-
+                getActivity().overridePendingTransition(R.animator.slide_in_left,R.animator.slide_out_right);
                 break;
             case 2:
                 Intent myIntent2 = new Intent(getActivity().getApplicationContext(), StockEvolutionActivity.class);
                 myIntent2.putExtra("type", "Bars"); //Optional parameters
                 startActivity(myIntent2);
+                getActivity().overridePendingTransition(R.animator.slide_in_left,R.animator.slide_out_right);
                 break;
             default:
                 return;

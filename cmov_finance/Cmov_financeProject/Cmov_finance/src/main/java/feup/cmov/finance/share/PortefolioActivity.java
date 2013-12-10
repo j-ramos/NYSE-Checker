@@ -32,6 +32,7 @@ import android.widget.RadioGroup;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +86,10 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 Stock s = stockArray.get(position);
                 Intent intent = new Intent(PortefolioActivity.this, ChartStockActivity.class);
                 intent.putExtra("stock", s);
+                //
                 startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_left, R.animator.slide_out_right);
+                //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -526,7 +530,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 args = args.substring(1);
                 String res = network.get(query + args);
                 Log.d("query", query+args);
-                parseDataValue(res);
+                parseDataValue(res, handler_);
                 handler_.post(new Runnable() {
                     @Override
                     public void run() {
@@ -540,7 +544,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
 
     }
 
-    public void parseDataValue(String res) {
+    public void parseDataValue(String res, Handler handler) {
         String[] sStocks = res.split("\\r?\\n");
         for(int i = 0 ; i < sStocks.length; i++)
         {
@@ -555,11 +559,24 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
             Float f= Float.valueOf(svalue.trim()).floatValue();
             skey = skey.substring(1, skey.length()-1);
             Stock s = stocks.get(skey);
+            if(f==0)
+            {
+                stocks.remove(s.acronym);
+                stockArray.remove(s);
+                final String  atemp =s.acronym;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Stock inválida: " + atemp , Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
             s.name=name.substring(1, name.length()-3);
             String temp[] = percentage.split("-", 3);
 
             s.percentage=temp[temp.length-1].substring(1, temp[temp.length-1].length()-1);
             s.value = f;
+
         }
     }
 }

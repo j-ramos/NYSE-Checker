@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import feup.cmov.cmov_finance.R;
+import feup.cmov.finance.share.PortefolioActivity;
 import feup.cmov.finance.stock.Portfolio;
 import feup.cmov.finance.stock.Stock;
 
@@ -123,6 +125,17 @@ public class PortfolioChartStatisticsActivity extends Activity {
         chart_type = intent.getStringExtra("type"); //if it's a string you stored.
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(PortfolioChartStatisticsActivity.this, PortefolioActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.slide_in_right,R.animator.slide_out_left);
+                return true;
+        }
+        return false;
+    }
     protected void onResume() {
         super.onResume();
         if(portfolio.getWalletSize() > 0) {

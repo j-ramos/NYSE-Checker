@@ -39,6 +39,7 @@ public class Portfolio extends Application{
             for (String key : stocks.keySet()) {
                 stocks.get(key).value=null;
                 stocks.get(key).delete=false;
+                stocks.get(key).setHistory(new ArrayList<Value>());
             }
             inputStream.close();
         } catch (Exception e) {
