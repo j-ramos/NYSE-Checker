@@ -8,10 +8,12 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.BaseColumns;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +35,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import feup.cmov.cmov_finance.R;
 import feup.cmov.finance.chart.ChartStockActivity;
@@ -40,6 +44,7 @@ import feup.cmov.finance.connection.Network;
 import feup.cmov.finance.connection.WebServiceCallRunnable;
 import feup.cmov.finance.stock.Portfolio;
 import feup.cmov.finance.stock.Stock;
+import feup.cmov.finance.stock.SwipeDismissListViewTouchListener;
 
 public class PortefolioActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
     private NavigationDrawerFragment mNavigationDrawerFragment;
@@ -49,8 +54,10 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
     private PortfolioAdapter adapter;
     private Dialog dialog;
     private ArrayList<Stock> stockArray;
-
+    private boolean refreshb=false;
     protected Portfolio portfolio;
+    private Stock lastDelete;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,13 +72,6 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
         portfolio = (Portfolio) getApplication();
-        portfolio.createStock("AAPL", 150);
-        portfolio.createStock("IBM", 12);
-        portfolio.createStock("DELL", 15);
-        portfolio.createStock("CSCO", 120);
-        portfolio.createStock("AMZN", 20);
-        portfolio.createStock("GOOG", 25);
-        portfolio.saveData();
 
 
         stocks = portfolio.getStocksHashMap();
@@ -80,6 +80,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         stockArray = new ArrayList<Stock>(stocks.values());
         adapter = new PortfolioAdapter(this , R.layout.list_item, stockArray);
         listView.setAdapter(adapter);
+        listView.setEmptyView(findViewById(R.id.empty));
         final Context context = this;
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,7 +91,59 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 startActivity(intent);
             }
         });
+
+        SwipeDismissListViewTouchListener touchListener =
+                new SwipeDismissListViewTouchListener(
+                        listView,
+                        new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                                for (int position : reverseSortedPositions) {
+                                    Stock s=stockArray.get(position);
+                                    s.delete=true;
+                                    lastDelete=s;
+                                    final Handler  h =getWindow().getDecorView().getHandler();
+                                    Thread th = new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Thread.sleep(3000);
+                                                if(lastDelete.delete==true)
+                                                {
+                                                    Stock st = stocks.get(lastDelete.acronym);
+                                                    portfolio.removeStoke(st);
+                                                    stockArray.remove(st);
+                                                    h.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            adapter.notifyDataSetChanged();
+                                                        }
+                                                    });
+                                                }
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    th.start();
+
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+
+        listView.setOnTouchListener(touchListener);
+        // Setting this scroll listener is required to ensure that during ListView scrolling,
+        // we don't look for swipes.
+        listView.setOnScrollListener(touchListener.makeScrollListener());
+
         refreshData(new Handler());
+
     }
     public void refreshData(Handler handler){
         final Handler h = handler;
@@ -161,6 +214,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                 addStock();
                 return true;
             case R.id.action_refresh:
+                refreshb=true;
                 Handler handler = getWindow().getDecorView().getHandler();
                 refreshData(handler);
                 return true;
@@ -236,13 +290,20 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                         EditText quantidadet = (EditText) view.findViewById(R.id.quantidade);
                         String quantidade = quantidadet.getText().toString();
                         int quantidadeInt = Integer.parseInt(quantidade);
-
-                        portfolio.createStock(value.toUpperCase(), quantidadeInt);
-                        portfolio.saveData();
-                        stocks = portfolio.getStocksHashMap();
-                        adapter.add(new Stock(value.toUpperCase(), quantidadeInt));
-                        adapter.notifyDataSetChanged();
+                        Stock s = stocks.get(value.toUpperCase());
+                        if (s != null) {
+                            portfolio.increaseStockAmmount(value.toUpperCase(), quantidadeInt);
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            portfolio.createStock(value.toUpperCase(), "", quantidadeInt);
+                            portfolio.saveData();
+                            stocks = portfolio.getStocksHashMap();
+                            Stock stemp = stocks.get(value.toUpperCase());
+                            adapter.add(stemp);
+                            adapter.notifyDataSetChanged();
+                        }
                         refreshData(getWindow().getDecorView().getHandler());
+
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -254,7 +315,11 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         dialog =  builder.create();
         dialog.show();
     }
-
+    public void clickUndo(View v)
+    {
+        lastDelete.delete=false;
+        adapter.notifyDataSetChanged();
+    }
     public class PortfolioAdapter extends ArrayAdapter<Stock> {
 
         private int layoutResourceId;
@@ -272,21 +337,64 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         public View getView(final int position, View convertView, ViewGroup parent) {
             View row = convertView;
             final int pos= position;
+            Stock s = data.get(position);
             if(row == null)
             {
-
-                LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-                row = inflater.inflate(layoutResourceId, parent, false);
+                if(s.delete==false)
+                {
+                    LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+                    row = inflater.inflate(layoutResourceId, parent, false);
+                }
+                else{
+                    LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+                    row=inflater.inflate(R.layout.list_item_delete, parent, false);
+                }
             }
-            Stock s = data.get(position);
+            else{
+                if(s.delete==true)
+                {
+                    LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+                    row=inflater.inflate(R.layout.list_item_delete, parent, false);
+                }
+                else {
+                    LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+                    row = inflater.inflate(layoutResourceId, parent, false);
+                }
+            }
+            if(s.delete==true)
+                return row;
 
+            ((TextView) row.findViewById(R.id.name)).setText(s.name);
             ((TextView) row.findViewById(R.id.acronym)).setText(s.acronym);
-            ((TextView) row.findViewById(R.id.value)).setText(String.valueOf(s.value));
+            if(s.value!=null)
+            {
+                TextView tvalue = ((TextView) row.findViewById(R.id.value));
+                tvalue.setVisibility(View.VISIBLE);
+                tvalue.setText(String.valueOf(s.value));
+                TextView percentage =  (TextView)row.findViewById(R.id.percentagem);
+                percentage.setVisibility(View.VISIBLE);
+                percentage.setText(s.percentage);
+                if(s.percentage.contains("+"))
+                {
+                    percentage.setTextColor(Color.GREEN);
+                }
+                else {
+                    percentage.setTextColor(Color.RED);
+                }
+                (row.findViewById(R.id.progressBar)).setVisibility(View.GONE);
+            }
+            else{
+                (row.findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
+                TextView tvalue = ((TextView) row.findViewById(R.id.value));
+                tvalue.setVisibility(View.GONE);
+                TextView percentage =  (TextView)row.findViewById(R.id.percentagem);
+                percentage.setVisibility(View.GONE);
+            }
             ((TextView) row.findViewById(R.id.amount)).setText(String.valueOf(s.ammount));
             row.findViewById(R.id.action).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PopupMenuListaView p = new PopupMenuListaView(pos);
+                    PopupMenuListView p = new PopupMenuListView(pos);
                     p.CreatePopupMenu(view);
                 }
             });
@@ -294,10 +402,10 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
             return row;
         }
 
-        public class PopupMenuListaView implements PopupMenu.OnMenuItemClickListener {
+        public class PopupMenuListView implements PopupMenu.OnMenuItemClickListener {
             private int position;
 
-            public PopupMenuListaView(int position)
+            public PopupMenuListView(int position)
             {
                 this.position=position;
             }
@@ -332,6 +440,13 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                                         NumberPicker number = (NumberPicker)view.findViewById(R.id.value);
                                         int n = number.getValue();
                                         stockArray.get(position).subAmmount(n);
+                                        if(stockArray.get(position).ammount==0)
+                                        {
+                                            Stock s=stockArray.get(position);
+                                            stockArray.remove(position);
+                                            portfolio.removeStoke(s);
+                                        }
+                                        adapter.notifyDataSetChanged();
                                         portfolio.saveData();
                                     }
                                 })
@@ -364,7 +479,7 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
                                     public void onClick(DialogInterface dialog, int id) {
                                         NumberPicker number = (NumberPicker)viewBuy.findViewById(R.id.value);
                                         int n = number.getValue();
-                                        adapter.getItem(position).subAmmount(n);
+                                        adapter.getItem(position).addAmmount(n);
                                         adapter.notifyDataSetChanged();
                                         portfolio.saveData();
                                     }
@@ -402,21 +517,27 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
             if(stocks.size()==0)
                 return;
             Network network = new Network();
-            String query = "http://finance.yahoo.com/d/quotes?f=sl1d1t1v&s=";
+            String query = "http://finance.yahoo.com/d/quotes?f=scl1n&s=";
             String args ="";
             for (String key : stocks.keySet()) {
-
-                args  += ","+ stocks.get(key).acronym;
+                if(stocks.get(key).value== null || refreshb==true)
+                    args  += ","+ stocks.get(key).acronym;
             }
-            args = args.substring(1);
-            String res = network.get(query + args);
-            parseDataValue(res);
-            handler_.post(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                }
-            });
+            refreshb=false;
+            if(!args.equals(""))
+            {
+                args = args.substring(1);
+                String res = network.get(query + args);
+                Log.d("query", query+args);
+                parseDataValue(res);
+                handler_.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+            portfolio.saveData();
         }
 
 
@@ -428,10 +549,19 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
         {
             String t[] = sStocks[i].split(",");
             String skey =  t[0];
-            String svalue = t[1];
+
+            String percentage = t[1];
+            String svalue = t[2];
+            String name = "";
+            for(int j = 3; j < t.length; j++)
+                name +=t[j] + ", ";
             Float f= Float.valueOf(svalue.trim()).floatValue();
             skey = skey.substring(1, skey.length()-1);
             Stock s = stocks.get(skey);
+            s.name=name.substring(1, name.length()-3);
+            String temp[] = percentage.split("-", 3);
+
+            s.percentage=temp[temp.length-1].substring(1, temp[temp.length-1].length()-1);
             s.value = f;
         }
     }

@@ -36,6 +36,10 @@ public class Portfolio extends Application{
             inputStream = new FileInputStream(yourFile);
             ObjectInputStream s = new ObjectInputStream(inputStream);
             stocks = (HashMap<String,Stock>)s.readObject();
+            for (String key : stocks.keySet()) {
+                stocks.get(key).value=null;
+                stocks.get(key).delete=false;
+            }
             inputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,8 +109,12 @@ public class Portfolio extends Application{
         stocks.put(name, s);
     }
 
-    public void createStock(String name, int ammount) {
-        Stock s = new Stock(name,ammount);
-        stocks.put(name, s);
+    public void createStock(String acron, String name, int ammount) {
+        Stock s = new Stock(acron, name,ammount);
+        stocks.put(acron, s);
+    }
+
+    public void removeStoke(Stock s) {
+        stocks.remove(s.acronym);
     }
 }

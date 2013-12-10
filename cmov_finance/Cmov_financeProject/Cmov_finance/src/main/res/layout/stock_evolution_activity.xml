@@ -29,12 +29,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/stockEvolutionGraphLayout">
+    android:id="@+id/stockEvolutionGraphLayout"
+    android:padding="3dp">
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/headerSection">
+        android:id="@+id/headerSection"
+        android:background="@drawable/rowshadow"
+        android:layout_marginBottom="3dp">
 
 
         <TextView
@@ -62,7 +65,8 @@
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/headerSection" >
+        android:layout_below="@id/headerSection"
+        android:background="@drawable/rowshadow">
     </LinearLayout>
 
 </LinearLayout>

@@ -34,7 +34,7 @@ public class SearchActivity extends Activity {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
+
         }
     }
     @Override

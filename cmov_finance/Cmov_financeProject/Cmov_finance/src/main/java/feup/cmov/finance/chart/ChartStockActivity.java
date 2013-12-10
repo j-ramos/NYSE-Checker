@@ -3,7 +3,6 @@ package feup.cmov.finance.chart;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.widget.LinearLayout;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
-import org.achartengine.chart.BarChart.Type;
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
@@ -63,13 +61,32 @@ public class ChartStockActivity extends Activity {
         stock = (Stock) intent.getSerializableExtra("stock");
         final Handler h = new Handler();
         valores = new ArrayList<Double>();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new RetriveData(h).run();
+        if(stock.getHistory().size()==0)
+        {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    new RetriveData(h).run();
+                }
+            });
+            thread.start();
+        }
+        else{
+            LinearLayout status = (LinearLayout) findViewById(R.id.status);
+            status.setVisibility(View.GONE);
+            LinearLayout linear_view = (LinearLayout) findViewById(R.id.chart_view);
+            linear_view.setVisibility(View.VISIBLE);
+            LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
+            if (mChart == null) {
+                initChart();
+                Double temp = Collections.min(valores);
+                mRenderer.setYAxisMin(temp);
+                mChart = ChartFactory.getLineChartView(getApplicationContext(), mDataset, mRenderer);
+                layout.addView(mChart);
+            } else {
+                mChart.repaint();
             }
-        });
-        thread.start();
+        }
     }
     @Override
     protected void onResume() {
@@ -142,10 +159,7 @@ public class ChartStockActivity extends Activity {
                     if (mChart == null) {
                         initChart();
                         Double temp = Collections.min(valores);
-                        if((temp - 20.f)>0)
-                            mRenderer.setYAxisMin(temp-20.f);
-                        else
-                            mRenderer.setYAxisMin(0);
+                        mRenderer.setYAxisMin(temp);
                         mChart = ChartFactory.getLineChartView(getApplicationContext(), mDataset, mRenderer);
                         layout.addView(mChart);
                     } else {
@@ -198,7 +212,7 @@ public class ChartStockActivity extends Activity {
     private void initChart() {
 
 
-        mCurrentSeries = new CategorySeries("Portfolio");
+        mCurrentSeries = new CategorySeries(stock.acronym);
         mDataset = new XYMultipleSeriesDataset();
         addData();
         mDataset.addSeries(mCurrentSeries.toXYSeries());
@@ -206,7 +220,7 @@ public class ChartStockActivity extends Activity {
         renderer.setDisplayChartValues(true);
         renderer.setLineWidth(3);
         renderer.setFillPoints(true);
-        renderer.setColor(stock.color);
+        renderer.setColor(Color.BLACK);
         renderer.setPointStyle(PointStyle.CIRCLE);
 
 
@@ -219,7 +233,6 @@ public class ChartStockActivity extends Activity {
         mRenderer.setShowGridX(true);      // this will show the grid in  graph
         mRenderer.setApplyBackgroundColor(true);
         mRenderer.setXLabels(BIND_AUTO_CREATE);
-
         mRenderer.setZoomEnabled(false, false);
         mRenderer.setBackgroundColor(Color.argb(0x00, 0x01, 0x01, 0x01));
         mRenderer.setMarginsColor(Color.argb(0x00, 0x01, 0x01, 0x01));
@@ -236,7 +249,7 @@ public class ChartStockActivity extends Activity {
         ArrayList<Value> history= stock.getHistory();
         for(int i= 0; i < history.size(); i++)
         {
-            mRenderer.addXTextLabel(i+1,history.get(i).getDate().toString());
+            mRenderer.addXTextLabel(i+1,"");
         }
 
     }
@@ -249,8 +262,7 @@ public class ChartStockActivity extends Activity {
         for(int i =0; i < history.size(); i++)
         {
             Value v= history.get(i);
-            Log.d("AMMOUNT * VALUE: ", new Double(amount * v.getValue()).toString());
-            Double d = new Double(amount * v.getValue());
+            Double d = new Double( v.getValue());
 
             /*DecimalFormat df = new DecimalFormat("#.000");
             String dformat = df.format(d);

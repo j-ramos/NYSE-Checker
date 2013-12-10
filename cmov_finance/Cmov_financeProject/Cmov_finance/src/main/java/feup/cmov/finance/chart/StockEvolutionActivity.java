@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -63,7 +64,8 @@ public class StockEvolutionActivity extends Activity {
 
         portfolio = (Portfolio)getApplication();
         activityLayout = (LinearLayout) findViewById(R.id.stockEvolutionGraphLayout);
-
+        TextView title = (TextView)findViewById(R.id.tv_title);
+        title.setText("Portefolio");
         // populate stocks with history data
         // and then create chart
         final Handler h = new Handler();
@@ -210,8 +212,6 @@ public class StockEvolutionActivity extends Activity {
                                 }
 
                             }
-
-
                             multiRenderer.setXLabels(BIND_AUTO_CREATE);
                             multiRenderer.setYTitle("Combined ammount in Euros");
 
@@ -324,7 +324,6 @@ public class StockEvolutionActivity extends Activity {
 
 
                         mChart = ChartFactory.getLineChartView(getBaseContext(), dataset, multiRenderer);
-                        mChart.setBackgroundColor(Color.WHITE);
                         mChart.setZoomRate(1);
 
 

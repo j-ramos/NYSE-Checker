@@ -19,12 +19,17 @@ import feup.cmov.finance.connection.WebServiceCallRunnable;
 public class Stock implements Serializable {
     public String acronym;
     public Integer ammount;
+    public String name;
+    public String percentage;
     public int color;
     private ArrayList<Value> history;
     public Float value;
-    public Stock(String acronym, Integer amount)
+    public boolean delete;
+    public Stock(String acronym, String name, Integer amount)
     {
+        delete=false;
         this.acronym=acronym;
+        this.name=name;
         this.ammount = amount;
         history=new ArrayList<Value>();
 
@@ -103,7 +108,7 @@ public class Stock implements Serializable {
     }
 
     public Float getTotalValue() {
-        return ammount*value;
+        return value*ammount;
     }
 
 }
