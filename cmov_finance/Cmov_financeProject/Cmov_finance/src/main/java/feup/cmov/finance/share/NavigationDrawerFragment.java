@@ -100,7 +100,7 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new DrawerAdapter( getActivity(), R.layout.drawer_layout_item, new String[]{
+        mDrawerListView.setAdapter(new DrawerAdapter( getActivity(), R.layout.drawer_layout_item, new String[]{ "",
                 getString(R.string.current_portfolio),
                 getString(R.string.portfolio_30_day),
         }));
@@ -129,16 +129,22 @@ public class NavigationDrawerFragment extends Fragment {
                 LayoutInflater inflater = ((Activity)context).getLayoutInflater();
                 row = inflater.inflate(layoutResourceId, parent, false);
             }
+            if(position==0)
+            {
+                LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+                row = inflater.inflate(R.layout.title, parent, false);
+                return row;
+            }
 
             ImageView image = (ImageView) row.findViewById(R.id.imgIcon);
             TextView text = (TextView) row.findViewById(R.id.name);
             switch (pos)
             {
-                case 0:
+                case 1:
                     text.setText(R.string.current_portfolio);
                     image.setImageResource(R.drawable.circular);
                     break;
-                case 1:
+                case 2:
                     text.setText(R.string.portfolio_30_day);
                     image.setImageResource(R.drawable.barras);
                     break;
@@ -243,13 +249,13 @@ public class NavigationDrawerFragment extends Fragment {
         1 -> 30 dias (barras)
          */
         switch(mCurrentSelectedPosition) {
-            case 0:
+            case 1:
                 Intent myIntent = new Intent(getActivity().getApplicationContext(), PortfolioChartStatisticsActivity.class);
                 myIntent.putExtra("type", "Circular"); //Optional parameters
                 startActivity(myIntent);
 
                 break;
-            case 1:
+            case 2:
                 Intent myIntent2 = new Intent(getActivity().getApplicationContext(), StockEvolutionActivity.class);
                 myIntent2.putExtra("type", "Bars"); //Optional parameters
                 startActivity(myIntent2);

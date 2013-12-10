@@ -26,13 +26,15 @@
 
     <string name="pick_stocks">Pick Stocks</string>
 
-    <string name="current_portfolio">Current Portfolio</string>
-    <string name="portfolio_30_day">30 day portfolio </string>
+    <string name="current_portfolio">Portefólio</string>
+    <string name="portfolio_30_day">Portefólio - 30 dias</string>
     <string name="acronym">Acronym</string>
     <string name="quantidade">Quantidade</string>
     <string name="add">Adicionar</string>
     <string name="action_refresh">Actualizar</string>
-    <string name="progress">A obter dados</string><string name="emptystocks">Não tem stocks</string><string name="addempty">Pode adicionar usando o botão adiciona</string>
+    <string name="progress">A obter dados</string>
+    <string name="emptystocks">Não tem stocks</string>
+    <string name="addempty">Pode adicionar usando o botão adicionar</string>
     <string-array
         name="array_acronym">
         <item>AMZN</item>
@@ -46,5 +48,7 @@
         <item>ORCL</item>
     </string-array>
     <string name="undo">Undo</string>
-    <string name="retry">Retry</string><string name="delete">Eliminar</string>
+    <string name="retry">Retry</string>
+    <string name="delete">Eliminar</string>
+    <string name="pesquisa">Pesquisa sem resultados</string>
 </resources>

@@ -35,8 +35,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import feup.cmov.cmov_finance.R;
 import feup.cmov.finance.chart.ChartStockActivity;
@@ -52,7 +50,6 @@ public class PortefolioActivity extends Activity implements NavigationDrawerFrag
     private HashMap<String, Stock> stocks;
     private ListView listView;
     private PortfolioAdapter adapter;
-    private Dialog dialog;
     private ArrayList<Stock> stockArray;
     private boolean refreshb=false;
     protected Portfolio portfolio;
